@@ -1,5 +1,6 @@
 package org.barbosa.finance.home.ui
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -10,14 +11,21 @@ import kotlinx.coroutines.launch
 import org.barbosa.finance.home.ui.fakes.HomeViewStateFakes
 import kotlin.time.Duration.Companion.seconds
 
-public class HomeViewModel{
+
+
+public class HomeViewModel {
     private val _state = MutableStateFlow(
         HomeViewState(
             expenses = listOf(),
         )
     )
 
-    val stateFlow: StateFlow<HomeViewState> = _state.asStateFlow()
+    init {
+        onCreate()
+    }
+
+    @NativeCoroutinesState
+    val state: StateFlow<HomeViewState> = _state.asStateFlow()
 
     public fun onCreate() {
         CoroutineScope(Dispatchers.Default).launch {
