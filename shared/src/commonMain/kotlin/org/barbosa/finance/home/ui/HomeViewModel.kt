@@ -5,29 +5,32 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 public class HomeViewModel{
     private val strings = HomeStrings()
 
-    private val _state = MutableStateFlow(
-        HomeViewState(
-            expenses = listOf(),
-        )
-    )
+    private val _state = MutableStateFlow(HomeViewState())
 
-    val stateFlow: StateFlow<HomeViewState> = _state.asStateFlow()
+    val state: StateFlow<HomeViewState> = _state.asStateFlow()
+
+    init {
+        onCreate()
+    }
 
     public fun onCreate() {
         CoroutineScope(Dispatchers.Default).launch {
-              _state.value = stateFlow.value.copy(
-                  navigationTitle = strings.navigationTitle
-              )
+              _state.update {
+                  it.copy(
+                      navigationTitle = strings.navigationTitle
+                  )
+              }
         }
     }
 
     public fun onInputChanged(newValue: String) {
-        val isInputValid = validadeInput(newValue)
+        val isInputValid = validateInput(newValue)
         _state.value = _state.value.copy(
             input = InputData(
                 inputText = newValue,
@@ -38,7 +41,7 @@ public class HomeViewModel{
         )
     }
 
-    private fun validadeInput(input: String): Boolean {
+    private fun validateInput(input: String): Boolean {
         return input.contains("@")
     }
 

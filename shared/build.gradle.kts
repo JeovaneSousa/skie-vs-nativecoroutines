@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     id("co.touchlab.skie") version "0.10.2-preview.2.1.20"
+    id("com.google.devtools.ksp") version "2.1.20-2.0.0"
+    id("com.rickclephas.kmp.nativecoroutines") version "1.0.0-ALPHA-42"
 }
 
 kotlin {
@@ -53,4 +55,8 @@ skie {
     features {
         enableSwiftUIObservingPreview = true
     }
+}
+
+kotlin.sourceSets.all {
+    languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
 }
