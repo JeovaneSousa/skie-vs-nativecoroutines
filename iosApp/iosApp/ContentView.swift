@@ -1,33 +1,10 @@
 import SwiftUI
 import Shared
-import KMPNativeCoroutinesCombine
-import Combine
 
-final class UiModel: ObservableObject {
-    private let viewModel: HomeViewModel
-    private var cancellable: AnyCancellable?
-
-    @Published var state: HomeViewState
-
-    init(viewModel: HomeViewModel = HomeViewModel()) {
-        self.viewModel = viewModel
-        self.state = viewModel.state
-
-        let publisher = createPublisher(for: viewModel.stateFlow)
-        self.cancellable = publisher
-            .receive(on: DispatchQueue.main)
-            .sink(
-                receiveCompletion: { _ in },
-                receiveValue: { [weak self] newState in
-                    self?.state = newState
-                }
-            )
-    }
-}
-
+// MARK: - View
 struct ContentView: View {
     
-    @StateObject var uiModel: UiModel
+    @StateObject var uiModel: AsyncUiModel
     
     var body: some View {
         HomeView(state: uiModel.state)
