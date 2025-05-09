@@ -1,10 +1,12 @@
 package org.barbosa.finance.home.ui
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 public class HomeViewModel{
@@ -16,11 +18,16 @@ public class HomeViewModel{
         )
     )
 
-    val stateFlow: StateFlow<HomeViewState> = _state.asStateFlow()
+    @NativeCoroutines
+    val state: StateFlow<HomeViewState> = _state.asStateFlow()
+
+    init {
+        onCreate()
+    }
 
     public fun onCreate() {
         CoroutineScope(Dispatchers.Default).launch {
-              _state.value = stateFlow.value.copy(
+              _state.value = state.value.copy(
                   navigationTitle = strings.navigationTitle
               )
         }
@@ -28,14 +35,15 @@ public class HomeViewModel{
 
     public fun onInputChanged(newValue: String) {
         val isInputValid = validadeInput(newValue)
-        _state.value = _state.value.copy(
-            input = InputData(
-                inputText = newValue,
-                isInputValid = isInputValid,
-                inputMessage = setInputMessage(isValidInput = isInputValid, input = newValue),
-                placeHolder = strings.inputDataStrings.placeHolder
+        _state.update {
+            it.copy(
+                input = InputData(
+                    isInputValid = isInputValid,
+                    inputMessage = setInputMessage(isValidInput = isInputValid, input = newValue),
+                    placeHolder = strings.inputDataStrings.placeHolder
+                )
             )
-        )
+        }
     }
 
     private fun validadeInput(input: String): Boolean {

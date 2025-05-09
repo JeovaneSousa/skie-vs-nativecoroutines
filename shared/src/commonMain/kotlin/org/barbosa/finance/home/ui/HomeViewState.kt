@@ -11,7 +11,6 @@ public data class HomeViewState(
 }
 
 public data class InputData(
-    val inputText: String = "",
     val isInputValid: Boolean = false,
     val inputMessage: String = "",
     val placeHolder: String = ""

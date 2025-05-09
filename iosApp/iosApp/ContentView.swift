@@ -1,32 +1,67 @@
 import SwiftUI
 import Shared
+import KMPNativeCoroutinesCombine
+import Combine
+
+// MARK: - UIModelWrapper
+
+class UiModel: ObservableObject {
+    private let viewModel: HomeViewModel
+    private var cancellables = Set<AnyCancellable>()
+    
+    
+    @Published var state: HomeViewState
+    @Published var inputText: String = ""
+    
+    var actions: HomeViewModel { viewModel.self }
+
+    init(viewModel: HomeViewModel, state: HomeViewState) {
+        self.viewModel = viewModel
+        self.state = state
+        
+        let publisher = createPublisher(for: viewModel.state)
+        
+        publisher
+            .receive(on: DispatchQueue.main)
+            .sink { _ in} receiveValue: { [weak self] state in
+                self?.state = state
+            }
+            .store(in: &cancellables)
+        
+        $inputText
+            .debounce(for: 0.5, scheduler: RunLoop.main)
+            .sink { newValue in
+                viewModel.onInputChanged(newValue: newValue)
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - View
 
 struct ContentView: View {
     
-    let viewModel = HomeViewModel()
+    @StateObject private var viewModel = UiModel(
+        viewModel: HomeViewModel(),
+        state: .companion.emptyState(),
+    )
     
     var body: some View {
-        Observing(viewModel.stateFlow) { state in
-            HomeView(
-                state: state,
-                onInputChange: { newValue in
-                    viewModel.onInputChanged(newValue: newValue)
-                }
-            )
-        }
-        .onAppear {
-            viewModel.onCreate()
-        }
+        HomeView(
+            state: viewModel.state,
+            inputText: $viewModel.inputText
+        )
+        
     }
 }
 
 struct HomeView: View {
     let state: HomeViewState
-    let onInputChange: (String) -> Void
+    let inputText: Binding<String>
     
-    init(state: HomeViewState, onInputChange: @escaping (String) -> Void) {
+    init(state: HomeViewState, inputText: Binding<String>) {
         self.state = state
-        self.onInputChange = onInputChange
+        self.inputText = inputText
     }
     
     var body: some View {
@@ -52,15 +87,7 @@ struct HomeView: View {
                     Text("Email:")
                         .font(.headline)
                     TextField(
-                        text: Binding(
-                            get: {
-                            state.input.inputText
-                            },
-                            set: { newValue in
-                                onInputChange(
-                                    newValue
-                                )
-                        }),
+                        text: inputText,
                         label: {
                             Text(state.input.placeHolder)
                         }
@@ -74,7 +101,6 @@ struct HomeView: View {
                     )
             }
         }
-
     }
 }
 
@@ -83,7 +109,7 @@ struct HomeView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ForEach(HomeViewStateFakes.allCases, id: \.self) { state in
-            HomeView(state: state.value, onInputChange: { _ in })
+            HomeView(state: state.value, inputText: .constant(state.inputText))
                 .previewDisplayName(state.name)
         }
     }

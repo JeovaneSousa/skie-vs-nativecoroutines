@@ -6,10 +6,10 @@ import org.barbosa.finance.home.ui.HomeViewState
 import org.barbosa.finance.home.ui.InputData
 import org.barbosa.finance.home.ui.PaymentMethod
 
-public enum class HomeViewStateFakes(val value: HomeViewState) {
-    EMPTY(value = emptyList),
-    VALID(value = oneElement),
-    INVALID(value = severalElements)
+public enum class HomeViewStateFakes(val value: HomeViewState, val inputText: String) {
+    EMPTY(value = emptyList, inputText = ""),
+    VALID(value = oneElement, inputText = "jeovane.barbosa@aiqfome.com"),
+    INVALID(value = severalElements, inputText = "jeovane.barbosaqfome-tralala.com")
 }
 
 private val strings = HomeStrings()
@@ -31,7 +31,6 @@ private val oneElement = HomeViewState(
         ),
     ),
     input = InputData(
-        inputText = "jeovane.barbosa@aiqfome.com",
         isInputValid = true,
         inputMessage = strings.inputDataStrings.correctInputText,
         placeHolder = strings.inputDataStrings.placeHolder
@@ -55,7 +54,6 @@ private val severalElements = HomeViewState(
         ),
     ),
     input = InputData(
-        inputText = "jeovane.barbosa--Tralala.com",
         isInputValid = false,
         inputMessage = strings.inputDataStrings.wrongInputText,
         placeHolder = strings.inputDataStrings.placeHolder
