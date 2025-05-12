@@ -13,9 +13,7 @@ public class HomeViewModel{
     private val strings = HomeStrings()
 
     private val _state = MutableStateFlow(
-        HomeViewState(
-            expenses = listOf(),
-        )
+        HomeViewState()
     )
 
     @NativeCoroutines
