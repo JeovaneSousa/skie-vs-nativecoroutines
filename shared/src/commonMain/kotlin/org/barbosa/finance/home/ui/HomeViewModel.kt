@@ -18,12 +18,12 @@ public class HomeViewModel{
         )
     )
 
+    val state: StateFlow<HomeViewState> = _state.asStateFlow()
+
     init {
         onCreate()
     }
-
-    val state: StateFlow<HomeViewState> = _state.asStateFlow()
-
+    
     public fun onCreate() {
         CoroutineScope(Dispatchers.Default).launch {
             _state.update { HomeViewStateFakes.EMPTY.value }
