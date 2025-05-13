@@ -6,14 +6,13 @@ struct ContentView: View {
     let viewModel = HomeViewModel()
     
     var body: some View {
-        Observing(viewModel.stateFlow) { state in
+        Observing(viewModel.state) { state in
             HomeView(state: state)
-                .onAppear {
-                    viewModel.onCreate()
-                }
         }
     }
 }
+
+// MARK: - View
 
 struct HomeView: View {
     let state: HomeViewState
