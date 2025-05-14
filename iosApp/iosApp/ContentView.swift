@@ -5,8 +5,6 @@ struct ContentView: View {
     
     let viewModel = HomeViewModel()
     
-    @State private var inputText: String = ""
-    
     var body: some View {
         Observing(viewModel.state) { state in
             HomeView(
@@ -28,7 +26,6 @@ struct ContentView: View {
 //    let viewModel = HomeViewModel()
 //    
 //    @State private var state: HomeViewState = HomeViewState.companion.emptyState()
-//    @State private var inputText: String = ""
 //    
 //    var body: some View {
 //        HomeView(

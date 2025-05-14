@@ -43,7 +43,7 @@ public class HomeViewModel{
 
     public fun onInputChanged(newValue: String) {
         val isInputValid = validadeInput(newValue)
-        
+
         _state.update {
             it.copy(
                 input = InputData(
