@@ -5,44 +5,66 @@ struct ContentView: View {
     
     let viewModel = HomeViewModel()
     
+    @State private var inputText: String = ""
+    
     var body: some View {
-        Observing(viewModel.stateFlow) { state in
+        Observing(viewModel.state) { state in
             HomeView(
                 state: state,
-                onInputChange: { newValue in
-                    viewModel.onInputChanged(newValue: newValue)
-                }
+                inputText: Binding(
+                    get: {
+                        state.input.inputText
+                    }, set: { newValue in
+                        viewModel.onInputChanged(newValue: newValue)
+                    }
+                )
             )
-        }
-        .onAppear {
-            viewModel.onCreate()
         }
     }
 }
 
+//struct ContentView: View {
+//    
+//    let viewModel = HomeViewModel()
+//    
+//    @State private var state: HomeViewState = HomeViewState.companion.emptyState()
+//    @State private var inputText: String = ""
+//    
+//    var body: some View {
+//        HomeView(
+//            state: state,
+//            inputText: Binding(
+//                get: {
+//                    state.input.inputText
+//                }, set: { newValue in
+//                    viewModel.onInputChanged(newValue: newValue)
+//                }
+//            )
+//        )
+//        .collect(flow: viewModel.state, into: $state)
+//    }
+//}
+
+// MARK: - View
+
 struct HomeView: View {
     let state: HomeViewState
-    let onInputChange: (String) -> Void
+    @Binding var inputText: String
     
-    init(state: HomeViewState, onInputChange: @escaping (String) -> Void) {
+    init(
+        state: HomeViewState,
+        inputText: Binding<String>
+    ) {
         self.state = state
-        self.onInputChange = onInputChange
+        self._inputText = inputText
     }
     
     var body: some View {
         NavigationView {
-            contentView
+            textView
                 .navigationTitle(state.navigationTitle)
                 .navigationBarTitleDisplayMode(.large)
         }
-    }
-        
-    @ViewBuilder
-    private var contentView: some View {
-        VStack(alignment: .center) {
-            textView
-        }
-
     }
     
     private var textView: some View {
@@ -52,18 +74,8 @@ struct HomeView: View {
                     Text("Email:")
                         .font(.headline)
                     TextField(
-                        text: Binding(
-                            get: {
-                            state.input.inputText
-                            },
-                            set: { newValue in
-                                onInputChange(
-                                    newValue
-                                )
-                        }),
-                        label: {
-                            Text(state.input.placeHolder)
-                        }
+                        text: $inputText,
+                        label: { Text(state.input.placeHolder) }
                     )
                 }
                 Text(state.input.inputMessage)
@@ -83,7 +95,7 @@ struct HomeView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ForEach(HomeViewStateFakes.allCases, id: \.self) { state in
-            HomeView(state: state.value, onInputChange: { _ in })
+            HomeView(state: state.value, inputText: .constant(state.value.input.inputText))
                 .previewDisplayName(state.name)
         }
     }
