@@ -9,8 +9,9 @@ import Shared
 import SwiftUI
 import KMPNativeCoroutinesCombine
 import Combine
-// MARK: - UiModelWrapper using Combine
 
+// MARK: - UiModelWrapper using Combine
+@MainActor
 final class CombineUiModel: ObservableObject {
     private let viewModel: HomeViewModel
     private var cancellable: AnyCancellable?

@@ -6,10 +6,10 @@
 //  Copyright © 2025 orgName. All rights reserved.
 //
 import Shared
-import KMPNativeCoroutinesAsync
 import SwiftUI
+import KMPNativeCoroutinesAsync
 
-// MARK: - UiModelWrapper using Combine
+// MARK: - UiModelWrapper using AsyncSequence
 @MainActor
 final class AsyncUiModel: ObservableObject {
     private let viewModel: HomeViewModel

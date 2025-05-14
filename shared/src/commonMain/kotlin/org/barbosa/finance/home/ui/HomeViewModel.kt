@@ -11,8 +11,6 @@ import kotlinx.coroutines.launch
 import org.barbosa.finance.home.ui.fakes.HomeViewStateFakes
 import kotlin.time.Duration.Companion.seconds
 
-
-
 public class HomeViewModel {
     private val _state = MutableStateFlow(
         HomeViewState(
@@ -20,12 +18,12 @@ public class HomeViewModel {
         )
     )
 
+    @NativeCoroutinesState
+    val state: StateFlow<HomeViewState> = _state.asStateFlow()
+
     init {
         onCreate()
     }
-
-    @NativeCoroutinesState
-    val state: StateFlow<HomeViewState> = _state.asStateFlow()
 
     public fun onCreate() {
         CoroutineScope(Dispatchers.Default).launch {
